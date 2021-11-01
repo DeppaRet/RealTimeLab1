@@ -3,11 +3,63 @@
 #include <semaphore>
 #include <process.h>
 #include "windows.h"
+#include "Semaphore.h"
 using namespace std;
 
-enum userСhoice { Process = 1, Thread, Sync,  Yes = 1, No, Work = 0, Die = 4 };
+enum userСhoice { Process = 1, Thread, Sync, Sema,  Yes = 1, No, Work = 0, Die = 5 };
 
 std::mutex mainMutex;
+
+Semaphore* s;
+LONG cMax = 1; // maximum amount of threads
+int alive_threads = 3; // amount of threads 
+
+DWORD WINAPI ThreadFunction1(LPVOID lpParameter) {
+	 s->WaitForSemaphore(INFINITE); // check whether we can start new thread
+	 cout << "Starting 1 thread: \n"; // starting
+	 int num = 0;
+	 for (int i = 0; i < 5; i++) {
+			cout << num << "\n"; // making calculations
+			num++;
+			Sleep(100);
+	 }
+	 cout << "Thread 1 completed! \n";
+	 s->LeaveSemaphore(); // leaving semaphore
+	 alive_threads--; // 1 thread is dead, reduce the amount of alive threads
+	 return(0);
+}
+
+DWORD WINAPI ThreadFunction2(LPVOID lpParameter) {
+	 s->WaitForSemaphore(INFINITE);
+	 cout << "Starting 2 thread: \n";
+	 int num = 100;
+	 for (int i = 0; i < 5; i++) {
+			cout << num << "\n";
+			num++;
+			Sleep(100);
+	 }
+	 cout << "Thread 2 completed! \n";
+	 s->LeaveSemaphore();
+	 alive_threads--;
+	 return(0);
+
+}
+
+DWORD WINAPI ThreadFunction3(LPVOID lpParameter) {
+	 s->WaitForSemaphore(INFINITE);
+	 cout << "Starting 3 thread: \n";
+	 int num = 500;
+	 for (int i = 0; i < 5; i++) {
+			cout << num << "\n";
+			num++;
+			Sleep(100);
+	 }
+	 cout << "Thread 3 completed! \n";
+	 s->LeaveSemaphore();
+	 alive_threads--;
+	 return(0);
+}
+
 void createProcess(int priority) {
 	 STARTUPINFO cif;
 	 ZeroMemory(&cif, sizeof(STARTUPINFO));
@@ -93,12 +145,6 @@ void main()
 			switch (i) {
 			case Process: {
 				 int priority = 0;
-				 // cout << "Choose process priority: " << endl;
-				 // cout << "1. Idle priority" << endl;
-				 // cout << "2. Normal priority" << endl;
-				 // cout << "3. High priority" << endl;
-				 // cout << "4. Real time priority" << endl;
-				 // cin >> priority;
 				 createProcess(priority);
 				 break;
 			}
@@ -109,6 +155,17 @@ void main()
 			}
 			case Sync: {
 				 syncMechsMutex();
+				 break;
+			}
+			case Sema: {
+				 s = new Semaphore(cMax); // creating semaphore
+				 CreateThread(NULL, 0, ThreadFunction1, NULL, 0, NULL);
+				 CreateThread(NULL, 0, ThreadFunction2, NULL, 0, NULL);
+				 CreateThread(NULL, 0, ThreadFunction3, NULL, 0, NULL);
+				 while (alive_threads != 0) {} // check whether all threads died
+				 s -> ~Semaphore(); // destroying semaphore
+
+				 _getch();
 				 break;
 			}
 			default:
