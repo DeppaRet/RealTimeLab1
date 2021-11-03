@@ -93,7 +93,7 @@ void createProcess(int priority) {
 	 if (CreateProcess(L"c:\\windows\\notepad.exe", NULL,
 			NULL, NULL, FALSE, NULL, NULL, NULL, &cif, &pi) == TRUE)
 	 {
-			cout << "New process" << endl;
+			cout << "New process was created" << endl;
 			cout << "handle " << pi.hProcess << endl;
 			cout << "Press enter to continue " << endl;
 			cin.get();				
