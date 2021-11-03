@@ -65,7 +65,7 @@ DWORD WINAPI ThreadFunction3(LPVOID lpParameter) {
 
 HANDLE g_hEventInitComplete = NULL;
 unsigned __stdcall TreadProc_event(void* pArguments) {
-	cout << (const char*)pArguments << " wait for execution \n";
+	cout << (const char*)pArguments << " waiting for execution \n";
 	WaitForSingleObject(g_hEventInitComplete, INFINITE);
 	cout << (const char*)pArguments << " is working \n";
 	Sleep(1000);
@@ -76,7 +76,7 @@ unsigned __stdcall TreadProc_event(void* pArguments) {
 
 CRITICAL_SECTION crit_sect;
 unsigned __stdcall CRTITICAL_SECTION_func(void* pArguments) {
-	cout << (const char*)pArguments << " wait for execution \n";
+	cout << (const char*)pArguments << " waiting for execution \n";
 	EnterCriticalSection(&crit_sect);
 	cout << (const char*)pArguments << " has occupied critical section. Work start\n";
 	Sleep(1000);
@@ -116,7 +116,7 @@ void beginThread() {
 	 HANDLE hThread;
 	 unsigned dwThread;
 	 /* создаем новый поток */
-	 cout << "Create new thread" << endl;
+	 cout << "Creating new thread" << endl;
 	 hThread = (HANDLE)_beginthreadex(
 			NULL, 0, ThreadProc, new int[128], 0, &dwThread
 	 );
