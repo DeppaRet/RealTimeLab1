@@ -195,7 +195,7 @@ void syncMechsWT() {
 	time.QuadPart = -10000000LL;
 	timer = CreateWaitableTimer(NULL, TRUE, NULL);
 	if (timer) {
-		cout << "Create WaitableTimer with 1 seconds of delay. Waiting for thread..." << endl;
+		cout << "Create WaitableTimer with 1 second of delay. Waiting for thread..." << endl;
 		SetWaitableTimer(timer, &time, 1000, NULL, NULL, 0);
 		WaitForSingleObject(timer, INFINITE);
 		cout << "Thread is working now" << endl;
